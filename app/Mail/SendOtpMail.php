@@ -13,34 +13,40 @@ class SendOtpMail extends Mailable
     use Queueable, SerializesModels;
 
     public $otp;
+    public $type; // 'register' atau 'reset'
 
     /**
-     * Create a new message instance.
+     * @param int    $otp
+     * @param string $type  'register' | 'reset'
      */
-    public function __construct($otp)
+    public function __construct($otp, string $type = 'reset')
     {
-        $this->otp = $otp;
+        $this->otp  = $otp;
+        $this->type = $type;
     }
 
     /**
-     * Email subject
+     * Subject email dinamis sesuai tipe.
      */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Kode OTP Reset Password'
-        );
+        $subject = $this->type === 'register'
+            ? 'Kode OTP Verifikasi Email - Perpustakaan Sekolah'
+            : 'Kode OTP Reset Password - Perpustakaan Sekolah';
+
+        return new Envelope(subject: $subject);
     }
 
     /**
-     * Email content
+     * Tampilkan view email dengan data tipe.
      */
     public function content(): Content
     {
         return new Content(
-            view: 'emails.password-otp',
+            view: 'emails.otp',
             with: [
-                'otp' => $this->otp
+                'otp'  => $this->otp,
+                'type' => $this->type,
             ]
         );
     }
