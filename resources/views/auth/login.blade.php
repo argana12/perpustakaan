@@ -6,12 +6,12 @@
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" autocomplete="off">
         @csrf
 
         <div>
             <x-input-label for="email" :value="__('Alamat Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="contoh@email.com" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="off" placeholder="contoh@email.com" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -21,7 +21,7 @@
     <div class="relative">
         <input id="password" type="password" name="password"
             class="block mt-1 w-full border-gray-300 rounded-md shadow-sm pr-10"
-            required />
+            required autocomplete="off" />
 
         <button type="button"
             onclick="togglePassword()"

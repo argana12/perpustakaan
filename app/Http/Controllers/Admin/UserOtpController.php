@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\PasswordOtp;
+use App\Models\SchoolClass;
+use App\Models\Major;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -16,6 +18,13 @@ class UserOtpController extends Controller
     public function index()
     {
         $users = User::whereNot('name', 'admin')
+            ->where(function ($query) {
+                $query->where('otp_attempt', '>', 0)
+                      ->orWhere('status', 'suspended')
+                      ->orWhereHas('passwordOtps', function ($q) {
+                          $q->where('attempt', '>', 0);
+                      });
+            })
             ->orderBy('name')
             ->get();
 
@@ -59,7 +68,6 @@ class UserOtpController extends Controller
     }
 
     // =========================================================
-    // =========================================================
     // APPROVAL USER (ADMIN VIEW)
     // =========================================================
 
@@ -72,11 +80,15 @@ class UserOtpController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return view('admin.pending-users', compact('pendingUsers'));
+        $classes = SchoolClass::orderBy('name')->get();
+        $majors  = Major::orderBy('name')->get();
+
+        return view('admin.pending-users', compact('pendingUsers', 'classes', 'majors'));
     }
 
     /**
-     * Generate kode aktivasi untuk user (Bisa semua role).
+     * Generate kode aktivasi untuk user (khusus admin).
+     * Untuk role student → wajib isi nama, kelas, jurusan terlebih dahulu.
      */
     public function generateCode(Request $request, User $user)
     {
@@ -87,11 +99,31 @@ class UserOtpController extends Controller
         }
 
         if ($user->status !== 'pending') {
-            return back()->withErrors(['error' => 'User ini tidak dalam antrian persetujuan.']);
+            abort(403, 'User sudah diproses');
         }
 
         if (\App\Models\ActivationCode::where('user_id', $user->id)->exists()) {
             return back()->withErrors(['error' => 'User sudah memiliki kode aktivasi yang aktif.']);
+        }
+
+        // Jika role adalah student → wajib ada kelas & jurusan
+        if ($request->role === 'student') {
+            $request->validate([
+                'name'    => 'required|string|max:255',
+                'kelas'   => 'required|string|max:50',
+                'jurusan' => 'required|string|max:100',
+            ], [
+                'name.required'    => 'Nama lengkap harus diisi.',
+                'kelas.required'   => 'Kelas harus dipilih.',
+                'jurusan.required' => 'Jurusan harus dipilih.',
+            ]);
+
+            // Perbarui data user
+            $user->update([
+                'name'    => trim($request->name),
+                'kelas'   => $request->kelas,
+                'jurusan' => $request->jurusan,
+            ]);
         }
 
         // Generate kode unik
@@ -108,9 +140,7 @@ class UserOtpController extends Controller
             'expired_at' => now()->addHours(24),
         ]);
 
-        $user->update([
-            'status' => 'approved' 
-        ]);
+        $user->update(['status' => 'approved']);
 
         return back()->with('generated', [
             'user_id' => $user->id,

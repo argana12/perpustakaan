@@ -23,6 +23,20 @@
                     <h3 class="font-bold text-gray-800">Semua Anggota</h3>
                     <p class="text-sm text-gray-500 mt-1">Lihat daftar seluruh anggota perpustakaan.</p>
                 </a>
+
+                <a href="{{ route('petugas.circulation.loan') }}"
+                   class="block p-6 bg-white rounded-xl shadow hover:shadow-md transition border-l-4 border-green-400">
+                    <div class="text-3xl mb-2">📚</div>
+                    <h3 class="font-bold text-gray-800">Mode Peminjaman</h3>
+                    <p class="text-sm text-gray-500 mt-1">Scan kode/QR buku lalu konfirmasi pinjam.</p>
+                </a>
+
+                <a href="{{ route('petugas.circulation.return') }}"
+                   class="block p-6 bg-white rounded-xl shadow hover:shadow-md transition border-l-4 border-emerald-500">
+                    <div class="text-3xl mb-2">✅</div>
+                    <h3 class="font-bold text-gray-800">Mode Pengembalian</h3>
+                    <p class="text-sm text-gray-500 mt-1">Scan buku untuk proses pengembalian dan denda.</p>
+                </a>
             </div>
         </div>
     </div>

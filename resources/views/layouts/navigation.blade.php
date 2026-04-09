@@ -17,14 +17,26 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Dashboard Admin') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
+                            {{ __('Semua User') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.pending.users')" :active="request()->routeIs('admin.pending.users')">
                             {{ __('Antrian Persetujuan') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.otp.index')" :active="request()->routeIs('admin.otp.index')">
                             {{ __('Manajemen OTP') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.master.data.index')" :active="request()->routeIs('admin.master.data.index')">
+                            {{ __('Master Data') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('admin.staff.schedule.index')" :active="request()->routeIs('admin.staff.schedule.index')">
                             {{ __('Jadwal Petugas') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.books.index')" :active="request()->routeIs('admin.books.*')">
+                            {{ __('Manajemen Buku') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.label.master.index')" :active="request()->routeIs('admin.label.master.*') || request()->routeIs('admin.label.colors.*') || request()->routeIs('admin.racks.*')">
+                            {{ __('Master Label & Rak') }}
                         </x-nav-link>
                     @endhasrole
 
@@ -38,11 +50,26 @@
                         <x-nav-link :href="route('petugas.users')" :active="request()->routeIs('petugas.users')">
                             {{ __('Semua Anggota') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('petugas.books.index')" :active="request()->routeIs('petugas.books.*')">
+                            {{ __('Manajemen Buku') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('petugas.circulation.loan')" :active="request()->routeIs('petugas.circulation.loan')">
+                            {{ __('Mode Peminjaman') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('petugas.circulation.return')" :active="request()->routeIs('petugas.circulation.return')">
+                            {{ __('Mode Pengembalian') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('petugas.fines.index')" :active="request()->routeIs('petugas.fines.index')">
+                            {{ __('Manajemen Denda') }}
+                        </x-nav-link>
                     @endhasrole
 
                     @hasrole('member')
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('member.books.index')" :active="request()->routeIs('member.books.index')">
+                            {{ __('Daftar Buku') }}
                         </x-nav-link>
                     @endhasrole
                     
@@ -107,14 +134,26 @@
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Dashboard Admin') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
+                    {{ __('Semua User') }}
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.pending.users')" :active="request()->routeIs('admin.pending.users')">
                     {{ __('Antrian Persetujuan') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.otp.index')" :active="request()->routeIs('admin.otp.index')">
                     {{ __('Manajemen OTP') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.master.data.index')" :active="request()->routeIs('admin.master.data.index')">
+                    {{ __('Master Data') }}
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.staff.schedule.index')" :active="request()->routeIs('admin.staff.schedule.index')">
                     {{ __('Jadwal Petugas') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.books.index')" :active="request()->routeIs('admin.books.*')">
+                    {{ __('Manajemen Buku') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.label.master.index')" :active="request()->routeIs('admin.label.master.*') || request()->routeIs('admin.label.colors.*') || request()->routeIs('admin.racks.*')">
+                    {{ __('Master Label & Rak') }}
                 </x-responsive-nav-link>
             @endhasrole
 
@@ -128,11 +167,26 @@
                 <x-responsive-nav-link :href="route('petugas.users')" :active="request()->routeIs('petugas.users')">
                     {{ __('Semua Anggota') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('petugas.books.index')" :active="request()->routeIs('petugas.books.*')">
+                    {{ __('Manajemen Buku') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('petugas.circulation.loan')" :active="request()->routeIs('petugas.circulation.loan')">
+                    {{ __('Mode Peminjaman') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('petugas.circulation.return')" :active="request()->routeIs('petugas.circulation.return')">
+                    {{ __('Mode Pengembalian') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('petugas.fines.index')" :active="request()->routeIs('petugas.fines.index')">
+                    {{ __('Manajemen Denda') }}
+                </x-responsive-nav-link>
             @endhasrole
 
             @hasrole('member')
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('member.books.index')" :active="request()->routeIs('member.books.index')">
+                    {{ __('Daftar Buku') }}
                 </x-responsive-nav-link>
             @endhasrole
 

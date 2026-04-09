@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Petugas;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivationCode;
 use App\Models\User;
+use App\Models\SchoolClass;
+use App\Models\Major;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -18,11 +21,15 @@ class MemberApprovalController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return view('petugas.member-approval', compact('pendingMembers'));
+        $classes = SchoolClass::orderBy('name')->get();
+        $majors  = Major::orderBy('name')->get();
+
+        return view('petugas.member-approval', compact('pendingMembers', 'classes', 'majors'));
     }
 
     /**
      * Generate kode aktivasi untuk satu user.
+     * Untuk role student → wajib isi nama, kelas, jurusan.
      */
     public function generateCode(Request $request, User $user)
     {
@@ -33,20 +40,40 @@ class MemberApprovalController extends Controller
         }
 
         if ($user->status !== 'pending') {
-            return back()->withErrors(['error' => 'User ini tidak dalam status pending.']);
+            abort(403, 'User sudah diproses');
         }
 
-        if (\App\Models\ActivationCode::where('user_id', $user->id)->exists()) {
+        if (ActivationCode::where('user_id', $user->id)->exists()) {
             return back()->withErrors(['error' => 'User sudah memiliki kode aktivasi yang aktif.']);
+        }
+
+        // Jika role adalah student → wajib ada kelas & jurusan
+        if ($request->role === 'student') {
+            $request->validate([
+                'name'    => 'required|string|max:255',
+                'kelas'   => 'required|string|max:50',
+                'jurusan' => 'required|string|max:100',
+            ], [
+                'name.required'    => 'Nama lengkap harus diisi.',
+                'kelas.required'   => 'Kelas harus dipilih.',
+                'jurusan.required' => 'Jurusan harus dipilih.',
+            ]);
+
+            // Perbarui data user
+            $user->update([
+                'name'    => trim($request->name),
+                'kelas'   => $request->kelas,
+                'jurusan' => $request->jurusan,
+            ]);
         }
 
         // Generate kode unik
         $code = strtoupper(Str::random(4)) . rand(100, 999);
-        while (\App\Models\ActivationCode::where('code', $code)->exists()) {
+        while (ActivationCode::where('code', $code)->exists()) {
             $code = strtoupper(Str::random(4)) . rand(100, 999);
         }
 
-        \App\Models\ActivationCode::create([
+        ActivationCode::create([
             'code'       => $code,
             'user_id'    => $user->id,
             'role'       => $request->role,
@@ -54,9 +81,7 @@ class MemberApprovalController extends Controller
             'expired_at' => now()->addHours(24),
         ]);
 
-        $user->update([
-            'status' => 'approved' // now they can input the code
-        ]);
+        $user->update(['status' => 'approved']);
 
         return back()->with('generated', [
             'user_id' => $user->id,
@@ -72,11 +97,8 @@ class MemberApprovalController extends Controller
      */
     public function allUsers()
     {
-        // View also suspended members
         $users = User::role('member')
             ->orWhere(function ($q) {
-                // Suspended user that doesn't have a role yet?
-                // Actually they don't have a role if they failed at 'approved' stage!
                 $q->whereIn('status', ['approved', 'suspended']);
             })
             ->orderBy('created_at', 'desc')
@@ -94,7 +116,6 @@ class MemberApprovalController extends Controller
             abort(403);
         }
 
-        // Petugas cannot unlock admin/petugas
         if ($user->hasRole(['admin', 'petugas'])) {
             return back()->withErrors(['error' => 'Anda tidak memiliki hak untuk membuka blokir role ini.']);
         }

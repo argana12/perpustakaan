@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Exception;
 
@@ -13,18 +14,22 @@ class GoogleAuthController extends Controller
     /**
      * Redirect user to Google OAuth page.
      */
-    public function redirect()
+    public function redirect(Request $request)
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')
+            ->redirectUrl($this->resolveRedirectUrl($request))
+            ->redirect();
     }
 
     /**
      * Handle incoming callback from Google.
      */
-    public function callback()
+    public function callback(Request $request)
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')
+                ->redirectUrl($this->resolveRedirectUrl($request))
+                ->user();
 
             $user = User::where('email', $googleUser->getEmail())->first();
 
@@ -65,6 +70,16 @@ class GoogleAuthController extends Controller
             return redirect()->route('login')
                 ->withErrors(['email' => 'Gagal terhubung dengan Google. Silakan ulangi kembali.']);
         }
+    }
+
+    private function resolveRedirectUrl(Request $request): string
+    {
+        $configured = trim((string) config('services.google.redirect', ''));
+        if ($configured !== '') {
+            return $configured;
+        }
+
+        return $request->getSchemeAndHttpHost() . '/auth/google/callback';
     }
 
     /**

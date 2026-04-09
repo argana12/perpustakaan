@@ -7,7 +7,7 @@
         {{ __('Ini adalah area yang aman di aplikasi perpustakaan. Harap konfirmasi kata sandi Anda sebelum melanjutkan ke halaman berikutnya.') }}
     </div>
 
-    <form method="POST" action="{{ route('password.confirm') }}">
+    <form method="POST" action="{{ route('password.confirm') }}" autocomplete="off">
         @csrf
 
         <div>
@@ -15,7 +15,7 @@
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
-                            required autocomplete="current-password" placeholder="Masukkan kata sandi Anda" />
+                            required autocomplete="off" placeholder="Masukkan kata sandi Anda" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 

@@ -1,0 +1,26 @@
+
+   INFO  Running migrations.  
+
+  2026_04_08_143233_create_book_queues_table  18.70ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'book_queues' already exists (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: perpustakaan, SQL: create table `book_queues` (`id` bigint unsigned not null auto_increment primary key, `user_id` bigint unsigned not null, `book_id` bigint unsigned not null, `status` enum('waiting', 'ready', 'called', 'expired', 'done', 'cancelled') not null default 'waiting', `ready_at` timestamp null, `called_at` timestamp null, `deadline` timestamp null, `created_at` timestamp null, `updated_at` timestamp null) default character set utf8mb4 collate 'utf8mb4_unicode_ci')
+
+  at vendor\laravel\framework\src\Illuminate\Database\Connection.php:838
+    834▕             $exceptionType = $this->isUniqueConstraintError($e)
+    835▕                 ? UniqueConstraintViolationException::class
+    836▕                 : QueryException::class;
+    837▕ 
+  ➜ 838▕             throw new $exceptionType(
+    839▕                 $this->getNameWithReadWriteType(),
+    840▕                 $query,
+    841▕                 $this->prepareBindings($bindings),
+    842▕                 $e,
+
+  1   vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+      PDOException::("SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'book_queues' already exists")
+
+  2   vendor\laravel\framework\src\Illuminate\Database\Connection.php:584
+      PDOStatement::execute()
+

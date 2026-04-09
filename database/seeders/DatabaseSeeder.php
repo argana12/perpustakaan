@@ -11,6 +11,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call([
+            LibraryMasterSeeder::class,
+        ]);
+
         // 🔐 Create roles
         $adminRole   = Role::firstOrCreate(['name' => 'admin']);
         $petugasRole = Role::firstOrCreate(['name' => 'petugas']);
