@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
-    base: '/',
     plugins: [
         laravel({
             input: [
@@ -13,12 +12,6 @@ export default defineConfig({
         }),
     ],
     build: {
-        manifest: true,
-        outDir: 'public/build',
-        rollupOptions: {
-            output: {
-                manualChunks: undefined,
-            },
-        },
-    },
+        manifest: 'manifest.json', // Memaksa nama dan lokasi file di luar .vite
+    }
 });
