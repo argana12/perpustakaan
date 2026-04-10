@@ -23,7 +23,9 @@ return new class extends Migration
             }
         });
 
-        DB::statement("ALTER TABLE books MODIFY COLUMN status ENUM('available','borrowed','reserved','lost') NOT NULL DEFAULT 'available'");
+        Schema::table('books', function (Blueprint $table) {
+            $table->enum('status', ['available', 'borrowed', 'reserved', 'lost'])->default('available')->change();
+        });
 
         $books = DB::table('books')->whereNull('code')->orderBy('id')->get(['id']);
         foreach ($books as $book) {
@@ -35,7 +37,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE books MODIFY COLUMN status ENUM('available','borrowed') NOT NULL DEFAULT 'available'");
+        Schema::table('books', function (Blueprint $table) {
+            $table->enum('status', ['available', 'borrowed'])->default('available')->change();
+        });
 
         Schema::table('books', function (Blueprint $table) {
             if (Schema::hasColumn('books', 'cover_image')) {
